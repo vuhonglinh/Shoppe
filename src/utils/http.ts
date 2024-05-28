@@ -35,13 +35,13 @@ class Http {
       (response) => {
         //Thành công
         const { url } = response.config
-        if (url === path.login || url === path.register) {
+        if (url === 'login' || url === 'register') {
           const data = response.data as AuthResponse
           //Gán accessToken == giá trị accessToken vừa lấy ra
           this.accessToken = (response.data as AuthResponse).data?.access_token
           setAccessTokenToLS(this.accessToken)
           setProfileToLs(data.data.user)
-        } else if (url === path.logout) {
+        } else if (url === 'logout') {
           this.accessToken = ''
           clearLS()
         }

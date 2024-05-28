@@ -1,26 +1,20 @@
-import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import useSearchProducts from 'src/hooks/useSearchProducts'
 
 export default function Search() {
-  const [search, setSearch] = useState<string>('')
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const data = event.target.value
-    setSearch(data)
-  }
+  const { register, handleSearch } = useSearchProducts()
 
   return (
-    <form className='col-span-9 position-relative'>
+    <form className='col-span-9 position-relative' onSubmit={handleSearch}>
       <div className='bg-white rounded-sm p-1 flex'>
         <input
           type='text'
-          name='search'
           id=''
-          value={search}
-          onChange={handleSearch}
+          {...register('search')}
           placeholder='Nhập sản phẩm cần tìm kiếm...'
           className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
         />
-        <button className='rounded-sm py-2 px-6 flex-shrink-0 text-white bg-orange hover:opacity-90'>
+        <button type='submit' className='rounded-sm py-2 px-6 flex-shrink-0 text-white bg-orange hover:opacity-90'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -37,7 +31,15 @@ export default function Search() {
           </svg>
         </button>
       </div>
-      <div className='position-absolute '></div>
+
+      <div className='w-[852px] absolute mt-1 border z-50 box-border'>
+        <Link to='' >
+          <div className='bg-slate-50  h-[44px] w-full hover:bg-slate-100 flex items-center'>
+            <span className='text-start ml-2'>Quần ba sọc</span>
+          </div>
+        </Link>
+      </div>
+
     </form>
   )
 }

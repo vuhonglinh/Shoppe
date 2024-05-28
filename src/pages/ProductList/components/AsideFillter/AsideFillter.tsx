@@ -1,60 +1,74 @@
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar } from '@fortawesome/free-solid-svg-icons'
-import { QueryConfig } from '../ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { Category } from 'src/types/category.type'
 import classNames from 'classnames'
 import path from 'src/contexts/path'
 import { useForm, Controller } from 'react-hook-form'
 import InputNumber from 'src/components/InputNumber'
-import { schema } from 'src/utils/rule'
-import { yupResolver } from '@hookform/resolvers/yup';
+import { Schema, schema } from 'src/utils/rule'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { ObjectSchema } from 'yup'
+import { NoUndefinedField } from 'src/utils/utils'
+import RatingStars from '../RatingStars'
+import { omit } from 'lodash'
+import InputV2 from 'src/components/InputV2'
 
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
 }
 
-type FormData = {
-  price_min: string
-  price_max: string
-}
+type FormData = NoUndefinedField<Pick<Schema, 'price_max' | 'price_min'>>
 
 const priceSchema = schema.pick(['price_max', 'price_min'])
 
 export default function AsideFillter({ queryConfig, categories }: Props) {
   //Lấy categorty trên url
   const { category } = queryConfig
-  const { control, watch } = useForm<FormData>({
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    watch,
+    formState: { errors },
+    trigger
+  } = useForm<FormData>({
+    resolver: yupResolver<FormData>(priceSchema as ObjectSchema<FormData>),
     defaultValues: {
       //Thiết lập giá trị mặc định cho input
       price_min: '',
       price_max: ''
-    }
+    },
+    shouldFocusError: false
   })
-
-  const {
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    resolver: yupResolver(priceSchema)
-  })
-
   const navigate = useNavigate()
   const valueForm = watch()
 
+  const onSubmit = handleSubmit(
+    (data) => {
+      navigate({
+        pathname: path.home,
+        search: createSearchParams({
+          ...queryConfig,
+          price_min: data.price_min,
+          price_max: data.price_max
+        }).toString()
+      })
+    },
+    (err: any) => {
+      err.price_min?.ref?.focus()
+    }
+  )
 
-  console.log(errors);
-
-  const onSubmit = handleSubmit((data) => {
+  const handleRemoveAll = () => {
+    setValue('price_min', '')
+    setValue('price_max', '')
     navigate({
       pathname: path.home,
-      search: createSearchParams({
-        ...queryConfig
-      }).toString()
+      search: createSearchParams(omit(queryConfig, ['price_max', 'price_min', 'category', 'rating_filter'])).toString()
     })
-  })
+  }
 
   return (
     <div className='py-4'>
@@ -122,7 +136,7 @@ export default function AsideFillter({ queryConfig, categories }: Props) {
         <div>Khoảng giá</div>
         <form onSubmit={onSubmit} className='mt-2'>
           <div className='flex items-start'>
-            <Controller
+            {/* <Controller
               control={control}
               name='price_min'
               render={({ field }) => (
@@ -131,11 +145,27 @@ export default function AsideFillter({ queryConfig, categories }: Props) {
                   className='grow'
                   placeholder='đ TỪ'
                   classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:show-sm'
-                  onChange={(event) => field.onChange(event.target.value)}
+                  {...field}
+                  onChange={(event) => {
+                    field.onChange(event.target.value)
+                    trigger('price_max')
+                  }}
                   value={field.value}
                   ref={field.ref}
+                  classNameError='hidden'
                 />
               )}
+            /> */}
+            <InputV2
+              type='number'
+              control={control}
+              name='price_min'
+              placeholder='đ TỪ'
+              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:show-sm'
+              onChange={() => {
+                trigger('price_min')
+              }}
+              classNameError='hidden'
             />
             <div className='mx-2 mt-2 shrink-0'>-</div>
             <Controller
@@ -147,13 +177,19 @@ export default function AsideFillter({ queryConfig, categories }: Props) {
                   className='grow'
                   placeholder='đ ĐẾN'
                   classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:show-sm'
-                  onChange={(event) => field.onChange(event.target.value)}
+                  {...field}
+                  onChange={(event) => {
+                    field.onChange(event.target.value)
+                    trigger('price_min')
+                  }}
                   value={field.value}
                   ref={field.ref}
+                  classNameError='hidden'
                 />
               )}
             />
           </div>
+          <div className='mt-1 min-h-[1.25rem] text-center text-orange'>{errors.price_min?.message}</div>
           <Button
             type='submit'
             className='w-full p-2 uppercase bg-orange text-white text-sm hover:bg-opacity-80 justify-center items-center'
@@ -164,34 +200,12 @@ export default function AsideFillter({ queryConfig, categories }: Props) {
       </div>
       <div className='bg-gray-300 h-[1px] my-4' />
       <div className='text-sm'>Đánh giá</div>
-      <ul className='mt-3'>
-        <li className='py-1 pl-2'>
-          <Link to='' className='flex items-center text-sm gap-1'>
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <div key={index} className=''>
-                  <FontAwesomeIcon icon={faStar} size='lg' style={{ color: '#FFD43B' }} />{' '}
-                </div>
-              ))}
-            Trở lên
-          </Link>
-        </li>
-        <li className='py-1 pl-2'>
-          <Link to='' className='flex items-center text-sm gap-1'>
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <div key={index} className=''>
-                  <FontAwesomeIcon icon={faStar} size='lg' style={{ color: '#FFD43B' }} />{' '}
-                </div>
-              ))}
-            Trở lên
-          </Link>
-        </li>
-      </ul>
+      <RatingStars queryConfig={queryConfig} />
       <div className='bg-gray-300 h-[1px] my-4' />
-      <Button className='w-full p-2 uppercase bg-orange text-white text-sm hover:bg-opacity-80 justify-center items-center'>
+      <Button
+        onClick={handleRemoveAll}
+        className='w-full p-2 uppercase bg-orange text-white text-sm hover:bg-opacity-80 justify-center items-center'
+      >
         XÓA TẤT CẢ
       </Button>
     </div>

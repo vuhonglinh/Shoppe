@@ -14,7 +14,7 @@ import Button from 'src/components/Button'
 import path from 'src/contexts/path'
 import banner from 'src/assets/image/anhbanner.png'
 
-type FormData = Omit<Schema, 'comfirm_password'>
+type FormData = Pick<Schema, 'email' | 'password'>
 
 export default function Login() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext) //Lấy ra hàm set khi authentication
@@ -42,7 +42,6 @@ export default function Login() {
         navigate('/')
       },
       onError: (error) => {
-        console.log(error)
         if (isAxiosUnprocessableEntity<ErrorResponseApi<FormData>>(error)) {
           const formError = error.response?.data.data
           if (formError) {

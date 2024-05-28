@@ -1,4 +1,5 @@
 import { Product, ProductList, ProductListConfig } from 'src/types/product.type'
+import { Purchase } from 'src/types/purchases.types'
 import { SuccessResponse } from 'src/types/utils.types'
 import http from 'src/utils/http'
 
@@ -13,7 +14,17 @@ const productApi = {
 
   //Lấy chi tiết sản phẩm
   getProductDetail: (id: string) => {
-    return http.get<SuccessResponse<Product>>(`URL/${id}`)
+    return http.get<SuccessResponse<Product>>(`${URL}/${id}`)
+  },
+
+
+  //Tìm kiếm sản phẩm
+  searchProducts: (name: string) => {
+    return http.get<SuccessResponse<ProductList>>(URL, {
+      params: {
+        name
+      }
+    })
   }
 }
 
