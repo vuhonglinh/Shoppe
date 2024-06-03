@@ -1,5 +1,9 @@
+import config from 'src/constants/config'
 import { HttpStatusCode } from './../constants/httpStatusCode.enum'
 import axios, { AxiosError } from 'axios'
+import image from 'src/assets/image/user.png'
+import { ErrorResponseApi } from 'src/types/utils.types'
+
 
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
@@ -8,6 +12,17 @@ export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
 export function isAxiosUnprocessableEntity<FormError>(error: unknown): error is AxiosError<FormError> {
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
+
+export function isAxiosUnauthorizedError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized
+}
+
+//Kiểm tra token hết hạn
+export function isAxiosExpriredTokenError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
+  return isAxiosUnauthorizedError<ErrorResponseApi<{ name: string, password: string }>>(error) && error.response?.data?.data?.name === "EXPIRED_TOKEN"
+}
+
+
 
 export function formatCurrency(currency: number) {
   return new Intl.NumberFormat('de-DE').format(currency)
@@ -44,4 +59,8 @@ export const getIdFromNameId = (name: string) => {
   //Lấy phần tử cuối của url chính là id sản phẩm
   const arr = name.split('-i.')
   return arr[arr.length - 1]
+}
+
+export const getAvatarUrl = (avatarName: string) => {
+  return avatarName ? `${config.baseURL}/images/${avatarName}` : image
 }

@@ -10,3 +10,6 @@ export type AuthResponse = SuccessResponse<{
   expires_refresh_token: string
   user: User
 }>
+
+
+export type RefreshTokenReponse = SuccessResponse<{ access_token: string }>

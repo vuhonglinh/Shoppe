@@ -13,6 +13,7 @@ import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
 import path from 'src/contexts/path'
 import banner from 'src/assets/image/anhbanner.png'
+import { HelmetProvider, Helmet } from 'react-helmet-async'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 
@@ -59,6 +60,13 @@ export default function Login() {
 
   return (
     <div className='bg-orange'>
+      <HelmetProvider>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>Đăng nhập | Shopee</title>
+          <link rel="canonical" href="http://mysite.com/example" />
+        </Helmet>
+      </HelmetProvider>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-10 lg:py-32 lg:pr-10'>
           <div
@@ -83,7 +91,7 @@ export default function Login() {
                 autoComplete='on'
                 register={register}
                 type='password'
-                className='mt-2'
+                className='mt-2 relative'
                 errorMessage={errors.password?.message}
                 placeholder='Mật khẩu'
               />

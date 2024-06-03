@@ -5,7 +5,7 @@ import Input from 'src/components/Input'
 import { Schema, registerSchema } from 'src/utils/rule'
 import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { isAxiosUnprocessableEntity } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.types'
 import { useContext } from 'react'
@@ -14,6 +14,7 @@ import { toast } from 'react-toastify'
 import Button from 'src/components/Button'
 import path from 'src/contexts/path'
 import { setProfileToLs } from 'src/utils/auth'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 
 type FormData = Pick<Schema, 'email' | 'password' | 'comfirm_password'>
 
@@ -75,6 +76,13 @@ export default function Register() {
 
   return (
     <div className='bg-orange'>
+      <HelmetProvider>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>Đăng ký | Shopee</title>
+          <link rel="canonical" href="http://mysite.com/example" />
+        </Helmet>
+        </HelmetProvider>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-10 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
@@ -93,16 +101,16 @@ export default function Register() {
                 autoComplete='on'
                 register={register}
                 type='password'
-                className='mt-2'
+                className='mt-2 relative'
                 errorMessage={errors.password?.message}
                 placeholder='Mật khẩu'
               />
               <Input
+                type='password'
                 name='comfirm_password'
                 register={register}
                 autoComplete='on'
-                type='password'
-                className='mt-2'
+                className='mt-2 relative'
                 errorMessage={errors.comfirm_password?.message}
                 placeholder='Mật khẩu'
               />

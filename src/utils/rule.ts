@@ -64,6 +64,15 @@ function testPriceMinMax(this: yup.TestContext<yup.AnyObject>) {
   return price_min !== '' || price_max !== ''
 }
 
+const handleConfirmPasswordYup = (refString: string) => {
+  return yup
+    .string()
+    .required('Mật khẩu là bắt buộc')
+    .min(5, 'Độ dài từ 6 - 150 ký tự')
+    .max(160, 'Độ dài từ 6 - 150 ký tự')
+    .oneOf([yup.ref(refString)], 'Nhập lại mật khẩu không khớp')
+}
+
 export const schema = yup.object({
   email: yup
     .string()
@@ -76,12 +85,7 @@ export const schema = yup.object({
     .required('Mật khẩu là bắt buộc')
     .min(5, 'Độ dài từ 6 - 150 ký tự')
     .max(160, 'Độ dài từ 6 - 150 ký tự'),
-  comfirm_password: yup
-    .string()
-    .required('Mật khẩu là bắt buộc')
-    .min(5, 'Độ dài từ 6 - 150 ký tự')
-    .max(160, 'Độ dài từ 6 - 150 ký tự')
-    .oneOf([yup.ref('password')], 'Nhập lại mật khẩu không khớp'),
+  comfirm_password: handleConfirmPasswordYup('password'),
   price_min: yup.string().test({
     name: 'price-not-allowed',
     message: 'Giá không phù hợp',
@@ -95,6 +99,18 @@ export const schema = yup.object({
   search: yup.string().trim().required('Tên sản phẩm là bắt buộc')
 })
 
+export const useSchema = yup.object({
+  name: yup.string().max(160, 'Độ dài tối đa là 160 ký tự'),
+  phone: yup.string().max(20, 'Độ dài tối đa là 20 ký tự'),
+  address: yup.string().max(160, 'Độ dài tối đa là 160 ký tự'),
+  avatar: yup.string().max(1000, 'Độ dài tối đa 1000 ký tự'),
+  date_of_birth: yup.date().max(new Date(), 'Hãy chọn một ngày trong quá khứ'),
+  password: schema.fields['password'] as yup.StringSchema<string | undefined, yup.AnyObject, undefined, ''>,
+  new_password: schema.fields['password'] as yup.StringSchema<string | undefined, yup.AnyObject, undefined, ''>,
+  comfirm_password: handleConfirmPasswordYup('new_password')
+})
+
+export type UserSchema = yup.InferType<typeof useSchema>
 export const searchSchema = schema.pick(['search'])
 export const loginSchema = schema.pick(['email', 'password'])
 export const registerSchema = schema.pick(['email', 'password', 'comfirm_password'])

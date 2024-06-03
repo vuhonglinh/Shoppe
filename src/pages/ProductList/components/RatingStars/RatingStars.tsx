@@ -1,7 +1,7 @@
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { createSearchParams, useNavigate } from 'react-router-dom'
-import { QueryConfig } from '../ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import path from 'src/contexts/path'
 
 /**

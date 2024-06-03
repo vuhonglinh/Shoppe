@@ -1,8 +1,18 @@
-import { Link } from 'react-router-dom'
+
 import useSearchProducts from 'src/hooks/useSearchProducts'
 
 export default function Search() {
   const { register, handleSearch } = useSearchProducts()
+  // const name = getValues('search')
+
+  // const searchMutation = useMutation({
+  //   mutationKey: ['searchProducts', name],
+  //   mutationFn: (name: string) => productApi.searchProducts(name)
+  // })
+  // if (name) {
+  //   const listSearch = searchMutation.mutate(name);
+  //   console.log(listSearch)
+  // }
 
   return (
     <form className='col-span-9 position-relative' onSubmit={handleSearch}>
@@ -31,15 +41,14 @@ export default function Search() {
           </svg>
         </button>
       </div>
-
+      {/* 
       <div className='w-[852px] absolute mt-1 border z-50 box-border'>
         <Link to='' >
           <div className='bg-slate-50  h-[44px] w-full hover:bg-slate-100 flex items-center'>
             <span className='text-start ml-2'>Quần ba sọc</span>
           </div>
         </Link>
-      </div>
-
+      </div> */}
     </form>
   )
 }

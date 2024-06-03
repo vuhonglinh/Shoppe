@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import productApi from 'src/apis/product.api'
 import ProductRating from 'src/components/ProductRating'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
@@ -10,11 +10,16 @@ import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
 import purchaseApi from 'src/apis/purchases.api'
 import { toast } from 'react-toastify'
-import { queryClient } from 'src/main'
 import { purchasesStatus } from 'src/constants/purchase'
+import path from 'src/contexts/path'
+import { useTranslation } from 'react-i18next'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
+import { convert } from 'html-to-text'
 
 export default function ProductDetail() {
+  const { t } = useTranslation(['product'])
   //Số lượng
+  const queryClient = useQueryClient()
   const [buyCount, setByCount] = useState<number>(1)
   const navigate = useNavigate()
   const { nameId } = useParams()
@@ -52,8 +57,6 @@ export default function ProductDetail() {
       toast.success(value.data.message, { autoClose: 1000 })
     }
   })
-
-
   const addToCart = () => {
     addToCartMutation.mutate({ product_id: product?._id as string, buy_count: buyCount })
   }
@@ -108,12 +111,34 @@ export default function ProductDetail() {
   }
 
   const buyNow = async () => {
-    addToCartMutation.mutate({ product_id: product?._id as string, buy_count: buyCount })
+    const res = await addToCartMutation.mutateAsync({
+      buy_count: buyCount,
+      product_id: product?._id as string
+    })
+    const purchase = res.data.data
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id
+      }
+    })
   }
 
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
+      <HelmetProvider>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>{product.name} | Shopee</title>
+          <link rel="canonical" href="http://mysite.com/example" />
+          <meta name='description' content={convert(product.description, {
+            limits: {
+              ellipsis: '...',
+              maxInputLength: 100
+            }
+          })} />
+        </Helmet>
+      </HelmetProvider>
       <div className='container'>
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
@@ -206,7 +231,7 @@ export default function ProductDetail() {
                   onType={handleByCount}
                   max={product.quantity}
                 />
-                <div className='ml-6 text-sm text-gray-500'>{product.quantity} sản phẩm có sẵn</div>
+                <div className='ml-6 text-sm text-gray-500'>{product.quantity} {t('product:availabe')}</div>
               </div>
               <div className='mt-8 flex items-center'>
                 <button
@@ -229,7 +254,10 @@ export default function ProductDetail() {
                   </svg>{' '}
                   Thêm vào giỏ hàng
                 </button>
-                <button onClick={buyNow} className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm outline-none hover:bg-orange/90'>
+                <button
+                  onClick={buyNow}
+                  className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm outline-none hover:bg-orange/90'
+                >
                   Mua ngay
                 </button>
               </div>

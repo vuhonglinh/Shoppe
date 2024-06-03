@@ -1,12 +1,11 @@
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { QueryConfig } from '../ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import { sortBy, order as orderConstan } from 'src/contexts/product'
 import classNames from 'classnames'
 import { ProductListConfig } from 'src/types/product.type'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import path from 'src/contexts/path'
-import { omit } from 'lodash'
 
 interface Props {
   queryConfig: QueryConfig

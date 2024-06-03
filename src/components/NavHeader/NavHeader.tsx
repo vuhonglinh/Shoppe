@@ -1,19 +1,18 @@
-import { toast } from "react-toastify"
-import authApi from "src/apis/auth.api"
-import useQueryConfig from "src/hooks/useQueryConfig"
-import { queryClient } from "src/main"
-import { useMutation } from '@tanstack/react-query'
-import purchaseApi from "src/apis/purchases.api"
-import { purchasesStatus } from "src/constants/purchase"
-import Popover from "../Popover"
-import { Link } from "react-router-dom"
-import path from "src/contexts/path"
-import Search from "../Search"
-import { useContext } from "react"
-import { AppContext } from "src/contexts/app.context"
-
+import { toast } from 'react-toastify'
+import authApi from 'src/apis/auth.api'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { purchasesStatus } from 'src/constants/purchase'
+import Popover from '../Popover'
+import { Link } from 'react-router-dom'
+import path from 'src/contexts/path'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
+import { useTranslation } from 'react-i18next'
 
 export default function NavHeader() {
+
+  const { i18n } = useTranslation()
+  const queryClient = useQueryClient()
   const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
 
   const logoutMutation = useMutation({
@@ -30,6 +29,9 @@ export default function NavHeader() {
     logoutMutation.mutate()
   }
 
+  const changeLanguageMain = (language: 'en' | 'vi') => {
+    i18n.changeLanguage(language)
+  }
 
   return (
     <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)]'>
@@ -110,8 +112,8 @@ export default function NavHeader() {
             renderPopover={
               <div className='bg-white relative shadow-md rounded-sm border border-gray-200'>
                 <div className='flex flex-col py-2 px-3 pr-32 pl-3'>
-                  <button className='py-2 px-3 hover:text-orange text-black mt-2  text-left'>Tiếng Việt</button>
-                  <button className='py-2 px-3 hover:text-orange text-black mt-2  text-left'>English</button>
+                  <button className='py-2 px-3 hover:text-orange text-black mt-2  text-left' onClick={() => console.log(123)}>Tiếng Việt</button>
+                  <button className='py-2 px-3 hover:text-orange text-black mt-2  text-left' onClick={() => changeLanguageMain('en')}>English</button>
                 </div>
               </div>
             }
